@@ -1,5 +1,6 @@
 import { apiClient } from '../api/client';
-import { authStore, User } from './authStore';
+import { authStore } from './authStore';
+import type { User } from './authStore';
 
 interface LoginResponse {
     jwt: string;
@@ -18,7 +19,7 @@ class AuthService {
             password,
         };
 
-        const response = await apiClient.post<LoginResponse>('/api/auth/local', credentials);
+        const response = await apiClient.post<LoginResponse>('/auth/local', credentials);
 
         const { jwt, user } = response.data;
         authStore.setAuth(jwt, user);
