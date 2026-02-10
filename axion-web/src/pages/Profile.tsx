@@ -4,7 +4,6 @@ import { authStore } from '../auth/authStore';
 import { authService } from '../auth/authService';
 import type { User } from '../auth/authStore';
 import { apiClient } from '../api/client';
-import axios from 'axios';
 import { Header } from '../components/Header';
 import { useAdminCheck } from '../hooks/useAdminCheck';
 import styles from './Profile.module.css';
