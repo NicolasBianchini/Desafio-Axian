@@ -1,12 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authStore } from '../auth/authStore';
+import { authService } from '../auth/authService';
 import type { User } from '../auth/authStore';
 import { apiClient } from '../api/client';
+import axios from 'axios';
 import { Header } from '../components/Header';
 import { useAdminCheck } from '../hooks/useAdminCheck';
 import styles from './Profile.module.css';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+
+interface ApiError {
+    response?: {
+        status?: number;
+        data?: {
+            message?: string | { messages: { message: string }[] }[];
+        };
+    };
+}
 
 export const Profile = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -19,6 +30,7 @@ export const Profile = () => {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
+    const logoutTimeoutRef = useRef<number | null>(null);
 
     useEffect(() => {
         const currentUser = authStore.getUser();
@@ -28,6 +40,14 @@ export const Profile = () => {
         }
         setUser(currentUser);
     }, [navigate]);
+
+    useEffect(() => {
+        return () => {
+            if (logoutTimeoutRef.current) {
+                clearTimeout(logoutTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -51,16 +71,48 @@ export const Profile = () => {
 
         setLoading(true);
         try {
-            // Atualiza a senha diretamente
-            await apiClient.put(`/users/${user?.id}`, {
+            const token = authStore.getToken();
+            console.log('Token atual:', token ? 'presente' : 'ausente');
+            console.log('Usuário atual:', user);
+            console.log('Tentando alterar senha para usuário:', user?.id);
+
+            // Usa o apiClient com autenticação para mudança real de senha
+            console.log('Mudando senha com autenticação...');
+
+            const response = await apiClient.post('/change-password', {
                 password: newPassword,
             });
 
-            setMessage('Senha alterada com sucesso!');
+            console.log('Sucesso! Resposta:', response);
+
+            setMessage('Senha alterada com sucesso! Redirecionando para login...');
             setNewPassword('');
             setConfirmPassword('');
-        } catch (err: any) {
-            setError(err.response?.data?.message?.[0]?.messages?.[0]?.message || 'Erro ao alterar senha.');
+
+            // Faz logout após 2 segundos
+            logoutTimeoutRef.current = window.setTimeout(() => {
+                authService.logout();
+                navigate('/login');
+            }, 2000);
+        } catch (err: unknown) {
+            const apiError = err as ApiError;
+            console.error('Erro completo:', err);
+            console.error('Status:', apiError.response?.status);
+            console.error('Data:', apiError.response?.data);
+
+            // Verifica se é erro 403 (Forbidden)
+            if (apiError.response?.status === 403) {
+                setError('Erro 403: Permissão negada. Verifique se o token está válido.');
+            } else if (apiError.response?.status === 401) {
+                setError('Erro 401: Token expirado. Faça login novamente.');
+                authService.logout();
+                navigate('/login');
+            } else {
+                const errorMessage = typeof apiError.response?.data?.message === 'string'
+                    ? apiError.response.data.message
+                    : apiError.response?.data?.message?.[0]?.messages?.[0]?.message;
+                setError(errorMessage || `Erro ao alterar senha (${apiError.response?.status || 'unknown'})`);
+            }
         } finally {
             setLoading(false);
         }
@@ -86,10 +138,6 @@ export const Profile = () => {
                         <div className={styles.infoRow}>
                             <span className={styles.label}>Email:</span>
                             <span className={styles.value}>{user.email}</span>
-                        </div>
-                        <div className={styles.infoRow}>
-                            <span className={styles.label}>ID:</span>
-                            <span className={styles.value}>{user.id}</span>
                         </div>
                     </div>
 

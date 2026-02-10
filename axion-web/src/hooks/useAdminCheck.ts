@@ -21,7 +21,7 @@ export const useAdminCheck = () => {
         }
 
         try {
-            const response = await apiClient.get(`/users/${currentUser.id}`);
+            const response = await apiClient.get('/users/me');
             const userRole = response.data.role?.type || response.data.role?.name;
             const isAdminUser =
                 userRole === 'admin' ||
@@ -31,6 +31,8 @@ export const useAdminCheck = () => {
             authStore.setIsAdmin(isAdminUser);
         } catch (err) {
             console.error('Error checking role:', err);
+            setIsAdmin(false);
+            authStore.setIsAdmin(false);
         } finally {
             setLoading(false);
         }

@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { Header } from '../components/Header';
 import { useAdminCheck } from '../hooks/useAdminCheck';
 import styles from './Foods.module.css';
 import { FiPlus, FiEdit2, FiTrash2, FiX } from 'react-icons/fi';
+
+interface ApiError {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
+}
 
 interface Food {
     id: number;
@@ -26,7 +33,6 @@ export const Foods = () => {
     const [formError, setFormError] = useState('');
     const [saving, setSaving] = useState(false);
     const [previewImage, setPreviewImage] = useState<{ name: string, link: string } | null>(null);
-    const navigate = useNavigate();
 
     const fetchFoods = async () => {
         setLoading(true);
@@ -34,8 +40,8 @@ export const Foods = () => {
         try {
             const response = await apiClient.get('/foods');
             setFoods(response.data.data || response.data);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Erro ao carregar comidas');
+        } catch (err: unknown) {
+            setError((err as ApiError).response?.data?.message || 'Erro ao carregar comidas');
         } finally {
             setLoading(false);
         }
@@ -95,8 +101,8 @@ export const Foods = () => {
             }
             closeModal();
             fetchFoods();
-        } catch (err: any) {
-            setFormError(err.response?.data?.message || 'Erro ao salvar');
+        } catch (err: unknown) {
+            setFormError((err as ApiError).response?.data?.message || 'Erro ao salvar');
         } finally {
             setSaving(false);
         }
@@ -108,8 +114,8 @@ export const Foods = () => {
         try {
             await apiClient.delete(`/foods/${food.id}`);
             fetchFoods();
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Erro ao excluir');
+        } catch (err: unknown) {
+            alert((err as ApiError).response?.data?.message || 'Erro ao excluir');
         }
     };
 

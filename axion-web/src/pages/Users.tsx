@@ -6,6 +6,14 @@ import { useAdminCheck } from '../hooks/useAdminCheck';
 import styles from './Users.module.css';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
+interface ApiError {
+    response?: {
+        data?: {
+            message?: string | { messages: { message: string }[] }[];
+        };
+    };
+}
+
 interface User {
     id: number;
     username: string;
@@ -63,8 +71,8 @@ export const Users = () => {
         try {
             const response = await apiClient.get('/users');
             setUsers(response.data);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Erro ao carregar usuários');
+        } catch (err: unknown) {
+            setError((err as ApiError).response?.data?.message as string || 'Erro ao carregar usuários');
         } finally {
             setLoading(false);
         }
@@ -106,8 +114,8 @@ export const Users = () => {
         try {
             await apiClient.delete(`/users/${userId}`);
             setUsers(users.filter(u => u.id !== userId));
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Erro ao deletar usuário');
+        } catch (err: unknown) {
+            alert((err as ApiError).response?.data?.message || 'Erro ao deletar usuário');
         }
     };
 
@@ -125,7 +133,12 @@ export const Users = () => {
         }
 
         try {
-            const payload: any = {
+            const payload: {
+                username: string;
+                email: string;
+                role: number;
+                password?: string;
+            } = {
                 username: formData.username,
                 email: formData.email,
                 role: parseInt(formData.role)
@@ -143,8 +156,12 @@ export const Users = () => {
 
             closeModal();
             fetchUsers();
-        } catch (err: any) {
-            alert(err.response?.data?.message?.[0]?.messages?.[0]?.message || 'Erro ao salvar usuário');
+        } catch (err: unknown) {
+            const apiError = err as ApiError;
+            const errorMessage = typeof apiError.response?.data?.message === 'string'
+                ? apiError.response.data.message
+                : apiError.response?.data?.message?.[0]?.messages?.[0]?.message;
+            alert(errorMessage || 'Erro ao salvar usuário');
         }
     };
 

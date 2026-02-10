@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { Header } from '../components/Header';
 import { useAdminCheck } from '../hooks/useAdminCheck';
-import styles from './People.module.css';
+import styles from './Places.module.css';
 import { FiPlus, FiEdit2, FiTrash2, FiX } from 'react-icons/fi';
+
+interface ApiError {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
+}
 
 interface Place {
     id: number;
@@ -26,7 +33,6 @@ export const Places = () => {
     const [formError, setFormError] = useState('');
     const [saving, setSaving] = useState(false);
     const [previewImage, setPreviewImage] = useState<{ name: string, link: string } | null>(null);
-    const navigate = useNavigate();
 
     const fetchPlaces = async () => {
         setLoading(true);
@@ -34,8 +40,8 @@ export const Places = () => {
         try {
             const response = await apiClient.get('/places');
             setPlaces(response.data.data || response.data);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Erro ao carregar locais');
+        } catch (err: unknown) {
+            setError((err as ApiError).response?.data?.message || 'Erro ao carregar locais');
         } finally {
             setLoading(false);
         }
@@ -95,8 +101,8 @@ export const Places = () => {
             }
             closeModal();
             fetchPlaces();
-        } catch (err: any) {
-            setFormError(err.response?.data?.message || 'Erro ao salvar');
+        } catch (err: unknown) {
+            setFormError((err as ApiError).response?.data?.message || 'Erro ao salvar');
         } finally {
             setSaving(false);
         }
@@ -108,8 +114,8 @@ export const Places = () => {
         try {
             await apiClient.delete(`/places/${place.id}`);
             fetchPlaces();
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Erro ao excluir');
+        } catch (err: unknown) {
+            alert((err as ApiError).response?.data?.message || 'Erro ao excluir');
         }
     };
 
@@ -156,11 +162,6 @@ export const Places = () => {
                                 key={place.id}
                                 className={styles.card}
                                 onClick={() => place.link && setPreviewImage(place)}
-                                style={{
-                                    backgroundImage: place.link ? `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${place.link})` : 'none',
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center'
-                                }}
                             >
                                 {isAdmin && (
                                     <div className={styles.cardActions} onClick={(e) => e.stopPropagation()}>
@@ -170,6 +171,15 @@ export const Places = () => {
                                         <button onClick={() => handleDelete(place)} className={styles.cardActionDelete}>
                                             <FiTrash2 size={14} />
                                         </button>
+                                    </div>
+                                )}
+                                {place.link && (
+                                    <div className={styles.cardImageWrapper}>
+                                        <img
+                                            src={place.link}
+                                            alt={place.name}
+                                            className={styles.cardImage}
+                                        />
                                     </div>
                                 )}
                                 <h3 className={styles.cardTitle}>{place.name}</h3>

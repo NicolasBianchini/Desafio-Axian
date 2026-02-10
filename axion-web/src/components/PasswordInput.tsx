@@ -1,4 +1,4 @@
-import { useState, InputHTMLAttributes } from 'react';
+import { useState, type InputHTMLAttributes } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import styles from './PasswordInput.module.css';
 

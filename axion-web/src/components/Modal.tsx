@@ -1,4 +1,4 @@
-import { ReactNode, FormEvent } from 'react';
+import { type ReactNode, type FormEvent } from 'react';
 import { FiX } from 'react-icons/fi';
 import styles from './Modal.module.css';
 

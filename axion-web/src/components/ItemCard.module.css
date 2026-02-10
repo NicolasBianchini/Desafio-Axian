@@ -1,29 +1,42 @@
 .card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
-    padding: 1.5rem;
-    height: 200px;
+    background: white;
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
     position: relative;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
     overflow: hidden;
 }
 
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.cardImageWrapper {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.cardImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .cardTitle {
-    color: white;
-    margin: 0;
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    z-index: 1;
+    color: #2c3e50;
+    margin: 0;
+    text-align: center;
+    padding: 1rem;
 }
 
 .cardActions {
@@ -33,6 +46,12 @@
     display: flex;
     gap: 0.5rem;
     z-index: 2;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.card:hover .cardActions {
+    opacity: 1;
 }
 
 .cardAction,
@@ -40,7 +59,7 @@
     background: rgba(255, 255, 255, 0.9);
     border: none;
     padding: 0.5rem;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -49,19 +68,19 @@
 }
 
 .cardAction {
-    color: #3498db;
+    color: #6b7280;
 }
 
 .cardAction:hover {
     background: white;
-    transform: scale(1.1);
+    color: #818cf8;
 }
 
 .cardActionDelete {
-    color: #e74c3c;
+    color: #6b7280;
 }
 
 .cardActionDelete:hover {
-    background: white;
-    transform: scale(1.1);
+    background: #fee2e2;
+    color: #dc2626;
 }

@@ -1,8 +1,19 @@
-import { useState, FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '../auth/authService';
 import styles from './Login.module.css';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+
+interface ApiError {
+    response?: {
+        data?: {
+            error?: {
+                message?: string;
+            };
+            message?: string | { messages: { message: string }[] }[];
+        };
+    };
+}
 
 export const Login = () => {
     const [email, setEmail] = useState('');
@@ -29,8 +40,9 @@ export const Login = () => {
         try {
             await authService.login(email, password);
             navigate('/people');
-        } catch (err: any) {
-            const message = err.response?.data?.error?.message || 'Erro ao fazer login';
+        } catch (err: unknown) {
+            const apiError = err as ApiError;
+            const message = apiError.response?.data?.error?.message || 'Erro ao fazer login';
             setError(message);
         } finally {
             setLoading(false);

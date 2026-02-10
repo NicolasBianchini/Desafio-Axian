@@ -19,19 +19,10 @@ export const ItemCard = ({
     onClick,
     showActions = false
 }: ItemCardProps) => {
-    const cardStyle = imageUrl
-        ? {
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${imageUrl})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-        }
-        : {};
-
     return (
         <div
             className={styles.card}
             onClick={onClick}
-            style={cardStyle}
         >
             {showActions && (onEdit || onDelete) && (
                 <div className={styles.cardActions} onClick={(e) => e.stopPropagation()}>
@@ -45,6 +36,15 @@ export const ItemCard = ({
                             <FiTrash2 size={14} />
                         </button>
                     )}
+                </div>
+            )}
+            {imageUrl && (
+                <div className={styles.cardImageWrapper}>
+                    <img
+                        src={imageUrl}
+                        alt={name}
+                        className={styles.cardImage}
+                    />
                 </div>
             )}
             <h3 className={styles.cardTitle}>{name}</h3>

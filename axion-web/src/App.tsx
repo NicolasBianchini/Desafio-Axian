@@ -6,7 +6,7 @@ import { Places } from './pages/Places';
 import { Profile } from './pages/Profile';
 import { Users } from './pages/Users';
 import { ProtectedRoute } from './auth/ProtectedRoute';
-import './styles/globals.css';
+import './styles/globals.global.css';
 
 function App() {
   return (
