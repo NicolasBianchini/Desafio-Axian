@@ -1,0 +1,14 @@
+{
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/change-password",
+            "handler": "change-password.changePassword",
+            "config": {
+                "policies": [
+                    "plugins::users-permissions.isAuthenticated"
+                ]
+            }
+        }
+    ]
+}
