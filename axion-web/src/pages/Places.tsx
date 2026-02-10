@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
-import { authService } from '../auth/authService';
-import { authStore } from '../auth/authStore';
+import { Header } from '../components/Header';
+import { useAdminCheck } from '../hooks/useAdminCheck';
 import styles from './People.module.css';
 import { FiPlus, FiEdit2, FiTrash2, FiX } from 'react-icons/fi';
 
@@ -19,7 +19,7 @@ export const Places = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-    const [isAdmin, setIsAdmin] = useState(false);
+    const { isAdmin } = useAdminCheck();
     const [showModal, setShowModal] = useState(false);
     const [editingPlace, setEditingPlace] = useState<Place | null>(null);
     const [formData, setFormData] = useState({ name: '', link: '' });
@@ -54,27 +54,7 @@ export const Places = () => {
 
     useEffect(() => {
         fetchPlaces();
-        checkAdminRole();
     }, []);
-
-    const checkAdminRole = async () => {
-        const currentUser = authStore.getUser();
-        if (!currentUser) return;
-
-        try {
-            const response = await apiClient.get(`/users/${currentUser.id}`);
-            const userRole = response.data.role?.type || response.data.role?.name;
-            const isAdminUser = userRole === 'admin' || userRole === 'super-admin' || userRole === 'administrator';
-            setIsAdmin(isAdminUser);
-        } catch (err) {
-            console.error('Error checking role:', err);
-        }
-    };
-
-    const handleLogout = () => {
-        authService.logout();
-        navigate('/login');
-    };
 
     const openCreateModal = () => {
         setEditingPlace(null);
@@ -135,17 +115,7 @@ export const Places = () => {
 
     return (
         <div className={styles.container}>
-            <header className={styles.header}>
-                <h1 className={styles.logo}>Axion Test</h1>
-                <nav className={styles.nav}>
-                    <button onClick={() => navigate('/people')} className={styles.navButton}>Pessoas</button>
-                    <button onClick={() => navigate('/foods')} className={styles.navButton}>Comidas</button>
-                    <button onClick={() => navigate('/places')} className={styles.navButton}>Locais</button>
-                    {isAdmin && <button onClick={() => navigate('/users')} className={styles.navButton}>Usuários</button>}
-                    <button onClick={() => navigate('/profile')} className={styles.navButton}>Perfil</button>
-                    <button onClick={handleLogout} className={styles.logoutButton}>Sair</button>
-                </nav>
-            </header>
+            <Header isAdmin={isAdmin} />
 
             <main className={styles.main}>
                 <div className={styles.titleRow}>

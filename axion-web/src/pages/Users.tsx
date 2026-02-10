@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
-import { authStore } from '../auth/authStore';
-import { authService } from '../auth/authService';
+import { Header } from '../components/Header';
+import { useAdminCheck } from '../hooks/useAdminCheck';
 import styles from './Users.module.css';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
@@ -28,7 +28,7 @@ export const Users = () => {
     const [roles, setRoles] = useState<Role[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [isAdmin, setIsAdmin] = useState(false);
+    const { isAdmin, loading: adminLoading } = useAdminCheck();
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [formData, setFormData] = useState({
@@ -46,38 +46,17 @@ export const Users = () => {
     };
 
     useEffect(() => {
-        checkAdminRole();
         fetchUsers();
         fetchRoles();
     }, []);
 
-    const checkAdminRole = async () => {
-        const currentUser = authStore.getUser();
-        if (!currentUser) {
-            navigate('/login');
-            return;
+    useEffect(() => {
+        if (!adminLoading && !isAdmin) {
+            setError('Você não tem permissão para acessar esta página');
+            const timeout = setTimeout(() => navigate('/people'), 2000);
+            return () => clearTimeout(timeout);
         }
-
-        try {
-            const response = await apiClient.get(`/users/${currentUser.id}`);
-            const userRole = response.data.role?.type || response.data.role?.name;
-
-            // Verifica se é admin ou super-admin
-            const isAdminUser = userRole === 'admin' ||
-                userRole === 'super-admin' ||
-                userRole === 'administrator';
-
-            setIsAdmin(isAdminUser);
-
-            if (!isAdminUser) {
-                setError('Você não tem permissão para acessar esta página');
-                setTimeout(() => navigate('/people'), 2000);
-            }
-        } catch (err) {
-            console.error('Error checking role:', err);
-            setError('Erro ao verificar permissões');
-        }
-    };
+    }, [adminLoading, isAdmin, navigate]);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -169,11 +148,6 @@ export const Users = () => {
         }
     };
 
-    const handleLogout = () => {
-        authService.logout();
-        navigate('/login');
-    };
-
     if (!isAdmin && !loading) {
         return (
             <div className={styles.container}>
@@ -187,17 +161,7 @@ export const Users = () => {
 
     return (
         <div className={styles.container}>
-            <header className={styles.header}>
-                <h1 className={styles.logo}>Axion Test</h1>
-                <nav className={styles.nav}>
-                    <button onClick={() => navigate('/people')} className={styles.navButton}>Pessoas</button>
-                    <button onClick={() => navigate('/foods')} className={styles.navButton}>Comidas</button>
-                    <button onClick={() => navigate('/places')} className={styles.navButton}>Locais</button>
-                    <button onClick={() => navigate('/users')} className={styles.navButton}>Usuários</button>
-                    <button onClick={() => navigate('/profile')} className={styles.navButton}>Perfil</button>
-                    <button onClick={handleLogout} className={styles.logoutButton}>Sair</button>
-                </nav>
-            </header>
+            <Header isAdmin={isAdmin} />
 
             <main className={styles.main}>
                 <div className={styles.titleRow}>

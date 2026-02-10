@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { authStore } from '../auth/authStore';
 import type { User } from '../auth/authStore';
 import { apiClient } from '../api/client';
-import { authService } from '../auth/authService';
+import { Header } from '../components/Header';
+import { useAdminCheck } from '../hooks/useAdminCheck';
 import styles from './Profile.module.css';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
@@ -14,7 +15,7 @@ export const Profile = () => {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
+    const { isAdmin } = useAdminCheck();
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
@@ -26,22 +27,7 @@ export const Profile = () => {
             return;
         }
         setUser(currentUser);
-        checkAdminRole();
     }, [navigate]);
-
-    const checkAdminRole = async () => {
-        const currentUser = authStore.getUser();
-        if (!currentUser) return;
-
-        try {
-            const response = await apiClient.get(`/users/${currentUser.id}`);
-            const userRole = response.data.role?.type || response.data.role?.name;
-            const isAdminUser = userRole === 'admin' || userRole === 'super-admin' || userRole === 'administrator';
-            setIsAdmin(isAdminUser);
-        } catch (err) {
-            console.error('Error checking role:', err);
-        }
-    };
 
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -80,28 +66,13 @@ export const Profile = () => {
         }
     };
 
-    const handleLogout = () => {
-        authService.logout();
-        navigate('/login');
-    };
-
     if (!user) {
         return null;
     }
 
     return (
         <div className={styles.container}>
-            <header className={styles.header}>
-                <h1 className={styles.logo}>Axion Test</h1>
-                <nav className={styles.nav}>
-                    <button onClick={() => navigate('/people')} className={styles.navButton}>Pessoas</button>
-                    <button onClick={() => navigate('/foods')} className={styles.navButton}>Comidas</button>
-                    <button onClick={() => navigate('/places')} className={styles.navButton}>Locais</button>
-                    {isAdmin && <button onClick={() => navigate('/users')} className={styles.navButton}>Usuários</button>}
-                    <button onClick={() => navigate('/profile')} className={styles.navButton}>Perfil</button>
-                    <button onClick={handleLogout} className={styles.logoutButton}>Sair</button>
-                </nav>
-            </header>
+            <Header isAdmin={isAdmin} />
 
             <main className={styles.main}>
                 <div className={styles.profileCard}>

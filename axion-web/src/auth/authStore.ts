@@ -1,5 +1,6 @@
 const TOKEN_KEY = 'axion_token';
 const USER_KEY = 'axion_user';
+const ADMIN_KEY = 'axion_is_admin';
 
 export interface User {
     id: number;
@@ -22,9 +23,18 @@ class AuthStore {
         localStorage.setItem(USER_KEY, JSON.stringify(user));
     }
 
+    getIsAdmin(): boolean {
+        return localStorage.getItem(ADMIN_KEY) === 'true';
+    }
+
+    setIsAdmin(isAdmin: boolean): void {
+        localStorage.setItem(ADMIN_KEY, isAdmin ? 'true' : 'false');
+    }
+
     logout(): void {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(ADMIN_KEY);
     }
 
     isAuthenticated(): boolean {

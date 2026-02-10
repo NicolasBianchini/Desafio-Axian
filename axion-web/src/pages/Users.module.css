@@ -4,63 +4,6 @@
   font-family: 'Open Sans', sans-serif;
 }
 
-.header {
-  background: white;
-  padding: 1.5rem 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin: 0;
-}
-
-.nav {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.navButton {
-  padding: 0.625rem 1.25rem;
-  background: transparent;
-  color: #6b7280;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'Open Sans', sans-serif;
-}
-
-.navButton:hover {
-  background: #f3f4f6;
-  color: #2c3e50;
-}
-
-.logoutButton {
-  padding: 0.625rem 1.25rem;
-  background: #fee2e2;
-  color: #dc2626;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'Open Sans', sans-serif;
-}
-
-.logoutButton:hover {
-  background: #fecaca;
-}
-
 .main {
   max-width: 1200px;
   margin: 0 auto;
