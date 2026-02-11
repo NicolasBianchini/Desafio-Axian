@@ -215,19 +215,6 @@ VITE_API_URL=http://localhost:1337/api
 
 ---
 
-## 🚧 Próximos Passos
-
-- [ ] Implementar testes unitários (Jest/Vitest)
-- [ ] Adicionar testes E2E (Playwright/Cypress)
-- [ ] Implementar paginação nas listagens
-- [ ] Adicionar filtros e busca
-- [ ] Implementar upload múltiplo de imagens
-- [ ] Adicionar dark mode
-- [ ] Configurar CI/CD
-- [ ] Deploy em produção (Vercel + Railway)
-
----
-
 ## 👨‍💻 Autor
 
 Desenvolvido como desafio técnico para demonstrar habilidades em:
