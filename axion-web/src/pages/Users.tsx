@@ -179,7 +179,7 @@ export const Users = () => {
     return (
         <Layout isAdmin={isAdmin} containerClassName={styles.container} mainClassName={styles.main}>
             <div className={styles.titleRow}>
-                <h2 className={styles.title}>Gerenciar Usuarios</h2>
+                <h2 className={styles.title}>Manage Users</h2>
                 <button onClick={handleCreate} className={styles.createButton}>
                     + Novo Usuario
                 </button>
@@ -207,12 +207,12 @@ export const Users = () => {
                         <tbody>
                             {users.map((user) => (
                                 <tr key={user.id}>
-                                    <td>{user.username}</td>
-                                    <td>{user.email}</td>
-                                    <td>
+                                    <td data-label="Usuario">{user.username}</td>
+                                    <td data-label="Email">{user.email}</td>
+                                    <td data-label="Role">
                                         <span className={styles.roleBadge}>{user.role?.name}</span>
                                     </td>
-                                    <td>
+                                    <td data-label="Acoes">
                                         <div className={styles.actions}>
                                             <button onClick={() => handleEdit(user)} className={styles.editButton}>
                                                 Editar

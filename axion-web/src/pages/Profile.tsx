@@ -124,11 +124,11 @@ export const Profile = () => {
     return (
         <Layout isAdmin={isAdmin} containerClassName={styles.container} mainClassName={styles.main}>
             <div className={styles.profileCard}>
-                <h2 className={styles.title}>Meu Perfil</h2>
+                <h2 className={styles.title}>My Profile</h2>
 
                 <div className={styles.infoSection}>
                     <div className={styles.infoRow}>
-                        <span className={styles.label}>Nome:</span>
+                        <span className={styles.label}>Name:</span>
                         <span className={styles.value}>{user.username}</span>
                     </div>
                     <div className={styles.infoRow}>
